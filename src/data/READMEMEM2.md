@@ -32,7 +32,11 @@ Nhiệm vụ: Trích xuất đặc trưng luồng mạng (Flow Features) từ fi
   - Lưu kết quả trích xuất chưa gán nhãn vào file `data/processed/flows_unlabeled.csv`.
 
  Phát triển Module Gán nhãn Dữ liệu (`labeling.py`)
-- [x] Đọc thông tin kịch bản từ tài liệu `README.md` của Scenario 7, xác định chính xác địa chỉ IP máy nhiễm Botnet: `147.32.84.165`.
+ Nguồn dữ liệu PCAP
+- Dataset: CTU-13, Scenario 7 (Sogou)
+- Link tải: https://www.stratosphereips.org/datasets-ctu13
+- File dùng: capture20110816-2.truncated.pcap
+- Đọc thông tin kịch bản từ tài liệu `README.md` của Scenario 7, xác định chính xác địa chỉ IP máy nhiễm Botnet: `147.32.84.165`.
 -  Viết module `src/data/labeling.py` áp dụng quy tắc gán nhãn nhị phân:
 - Nếu `src_ip` hoặc `dst_ip` là `147.32.84.165` => `label = 1` (Botnet).
  - Ngược lại => `label = 0` (Normal).
@@ -54,7 +58,7 @@ Nhiệm vụ: Trích xuất đặc trưng luồng mạng (Flow Features) từ fi
 
 File đầu ra: `data/processed/ctu13_labeled_flows.csv` 
 
-4. Công việc tiếp theo (Kế hoạch Tuần 4)
+4. Công việc tiếp theo
 - Bàn giao file dữ liệu `data/processed/ctu13_labeled_flows.csv` cho Thành viên 3 
 - Soạn thảo nội dung Chương 2 Báo cáo:
   - Mô tả tổng quan về tập dữ liệu CTU-13 (Scenario 7 - Sogou Botnet).
