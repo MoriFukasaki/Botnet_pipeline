@@ -1,4 +1,4 @@
-# BOTNET DETECTION PIPELINE (BOTNET_SEXLINE)
+# BOTNET DETECTION PIPELINE (BOTNET_PIPELINE)
 # BẢNG PHÂN CÔNG NHIỆM VỤ & MA TRẬN TRÁCH NHIỆM (5 THÀNH VIÊN)
 
 **Đề tài**: Xây dựng Pipeline trích xuất đặc trưng và phát hiện Botnet từ lưu lượng mạng PCAP  
