@@ -2,33 +2,38 @@
 
 > **Dự án**: Xây dựng Pipeline trích xuất đặc trưng và phát hiện Botnet từ lưu lượng mạng PCAP  
 > **Môn học**: Ứng dụng Học máy trong An toàn thông tin  
-> **Thời gian thực hiện**: 5 tuần  
+> **Thời gian thực hiện**: 2 tuần (Kế hoạch chạy nước rút - 14 ngày)  
 
 ---
 
-## 🗺️ 1. Sơ đồ Dòng Chảy Dự Án (Pipeline Flow)
+## 🗺️ 1. Sơ đồ Dòng Chảy Dự Án (Tiến Độ 2 Tuần Nước Rút)
 
 ```mermaid
 flowchart TD
-    subgraph Tuan1["Tuần 1: Khởi tạo & Dữ liệu"]
-        TV1_Git["Dev 1: Khởi tạo Repo Git & Khung cấu trúc"]
-        TV2_PCAP["Dev 2: Xử lý PCAP & Gán nhãn"]
-        TV1_Git --> TV2_PCAP
+    subgraph Tuan1["TUẦN 1 (Ngày 1 - 7): Xử lý Dữ liệu, Tiền xử lý & Khung kiến trúc"]
+        D1_Init["Dev 1: Khởi tạo Git & Khung thư mục chuẩn"]
+        D2_PCAP["Dev 2: Trích xuất PCAP & Gán nhãn"]
+        D3_Clean["Dev 3: Làm sạch, Chống rò rỉ & RobustScaler"]
+        D4_Frame["Dev 4: Dựng sẵn khung train.py với Dummy Data"]
+        
+        D1_Init --> D2_PCAP
+        D2_PCAP -- "Ngày 5: ctu13_labeled_flows.csv" --> D3_Clean
+        D1_Init --> D4_Frame
     end
 
-    subgraph Tuan2_3["Tuần 2 - 3: Tiền xử lý & Huấn luyện Model"]
-        TV3_Data["Dev 3: Tiền xử lý, Chống rò rỉ, Scaler"]
-        TV4_ML["Dev 4: Huấn luyện mô hình ML & Đánh giá"]
-        TV2_PCAP -- "File ctu13_labeled_flows.csv" --> TV3_Data
-        TV3_Data -- "File train/test.csv + scaler.joblib" --> TV4_ML
-    end
-
-    subgraph Tuan4_5["Tuần 4 - 5: Giao diện Web & Tích hợp"]
-        TV5_Web["Dev 5: Xây dựng Web Streamlit & Biểu đồ"]
-        TV1_End["Dev 1: Phát triển CLI detect.py + Báo cáo + Slide"]
-        TV4_ML -- "File best_model.joblib + benchmark.csv" --> TV5_Web
-        TV4_ML -- "best_model.joblib" --> TV1_End
-        TV3_Data -- "scaler.joblib" --> TV1_End
+    subgraph Tuan2["TUẦN 2 (Ngày 8 - 14): Huấn luyện ML, Web Demo & Báo cáo"]
+        D4_Train["Dev 4: Nạp Data thật, Huấn luyện 4 Model & Xuất best_model"]
+        D5_Web["Dev 5: Dựng Web Streamlit, Vẽ Confusion Matrix & Demo"]
+        D1_CLI["Dev 1: Viết CLI detect.py, Tích hợp Pipeline & Báo cáo"]
+        
+        D3_Clean -- "Ngày 8: train/test.csv" --> D4_Train
+        D3_Clean -- "scaler.joblib" --> D1_CLI
+        D4_Train -- "Ngày 10: best_model.joblib + benchmark.csv" --> D5_Web
+        D4_Train -- "best_model.joblib" --> D1_CLI
+        D2_PCAP -. "Chương 2" .-> D1_CLI
+        D3_Clean -. "Chương 3" .-> D1_CLI
+        D4_Train -. "Chương 4" .-> D1_CLI
+        D5_Web -. "Chương 5" .-> D1_CLI
     end
 ```
 
@@ -63,204 +68,153 @@ Botnet_sexline/
 ---
 
 ### 👤 DEV 1: Leader & Tích Hợp Hệ Thống (System Architect & Integration)
-* **Vai trò**: Quản trị kho mã nguồn, kết nối các thành phần hệ thống, xây dựng công cụ dòng lệnh (CLI), biên soạn Báo cáo tổng kết và Slide thuyết trình.
-* **🛠 Công cụ sử dụng**:
-  * Git & GitHub (quản lý repository, phân nhánh, review Pull Request).
-  * VS Code, Python 3.10+, thư viện `argparse` hoặc `click`.
-  * Microsoft Word / Google Docs (Báo cáo), PowerPoint / Canva (Slide).
+* **Vai trò**: Quản trị Git, kết nối các module, viết CLI suy diễn, điều phối tiến độ 14 ngày, chủ trì biên soạn Báo cáo và Slide.
+* **🛠 Công cụ sử dụng**: Git & GitHub, VS Code, Python 3.10+, `argparse`, Microsoft Word / Docs, PowerPoint / Canva.
+* **📥 Điều kiện đầu vào**: Tài khoản GitHub của 5 thành viên; bộ mã nguồn từ Dev 2, 3, 4, 5 khi tích hợp.
 
-* **📥 Điều kiện đầu vào**:
-  * Danh sách thông tin tài khoản GitHub của các thành viên.
-  * Tích hợp hệ thống: Nhận module trích xuất từ Dev 2, bộ chuẩn hóa `scaler.joblib` từ Dev 3, mô hình `best_model.joblib` từ Dev 4.
+* **💻 To-do List (Tiến độ 14 ngày):**
+  - [ ] **Ngày 1**: Khởi tạo Git repo, tạo cây thư mục chuẩn, cấu hình `.gitignore` và `requirements.txt`.
+  - [ ] **Ngày 2 - 7**: Theo dõi sát sao tiến độ bàn giao data giữa Dev 2 và Dev 3; soạn sẵn khung dàn ý Báo cáo (Word) và mẫu Slide thuyết trình.
+  - [ ] **Ngày 8 - 10**: Lập trình script CLI `src/inference/detect.py`:
+    - Nhận tham số file PCAP: `python src/inference/detect.py --pcap test.pcap`.
+    - Kết nối: Bóc tách luồng (Dev 2) $\rightarrow$ Chuẩn hóa (Dev 3) $\rightarrow$ Dự đoán nhãn Botnet (Dev 4).
+    - In ra danh sách các địa chỉ IP bị nghi vấn xâm nhập trên terminal.
+  - [ ] **Ngày 11 - 12**: Lập trình script điều phối tự động `scripts/run_pipeline.py`.
+  - [ ] **Ngày 12 - 14**: Thu thập nội dung Chương 2, 3, 4, 5 từ các bạn, ráp lại thành Báo cáo tổng thể hoàn chỉnh và hoàn thiện Slide thuyết trình.
 
-* **💻 To-do List (Quy trình thực hiện):**
-  - [ ] **Tuần 1**: Khởi tạo Git repo, tạo cây thư mục chuẩn, cấu hình `.gitignore` và `requirements.txt`.
-  - [ ] **Tuần 1 - 5**: Họp điều phối hàng tuần, theo dõi tiến độ và hỗ trợ giải quyết xung đột mã nguồn (Git conflict).
-  - [ ] **Tuần 4**: Lập trình công cụ dòng lệnh `src/inference/detect.py`:
-    - Nhận đường dẫn file PCAP: `python src/inference/detect.py --pcap test.pcap`.
-    - Kết nối luồng: Trích xuất đặc trưng (Dev 2) $\rightarrow$ Chuẩn hóa dữ liệu (Dev 3) $\rightarrow$ Dự đoán phân loại Botnet (Dev 4).
-    - Xuất thông báo cảnh báo danh sách địa chỉ IP nghi vấn bị xâm nhập.
-  - [ ] **Tuần 4**: Lập trình script tự động hóa `scripts/run_pipeline.py` (chạy toàn bộ quy trình từ tiền xử lý đến ra kết quả).
-  - [ ] **Tuần 5**: Thu thập các chương nội dung từ các thành viên, hoàn thiện Báo cáo tổng kết (Word) và Slide thuyết trình chuyên nghiệp.
-
-* **🎯 Sản phẩm bàn giao & Tiêu chí nghiệm thu:**
-  - [ ] Repository GitHub được cấu trúc chuẩn hóa, có commit đầy đủ từ các thành viên.
-  - [ ] Script `src/inference/detect.py` và `scripts/run_pipeline.py` vận hành chính xác, không phát sinh lỗi.
-  - [ ] Bản Báo cáo khoa học (`.docx`) và Slide thuyết trình (`.pptx`) chỉn chu.
+* **🎯 Sản phẩm bàn giao:**
+  - [ ] Repository Git chỉn chu, nhánh `main` ổn định.
+  - [ ] Script `detect.py` và `run_pipeline.py` vận hành mượt mà.
+  - [ ] File Báo cáo `.docx` và Slide thuyết trình `.pptx` hoàn chỉnh trước ngày 14.
 
 ---
 
 ### 👤 DEV 2: Kỹ Sư Dữ Liệu Mạng (PCAP Processing & Labeling)
-* **Vai trò**: Xử lý gói tin mạng thô từ file PCAP, gom luồng truyền thông (Network Flow), tính toán các đặc trưng thống kê và gán nhãn dữ liệu dựa trên danh sách Botnet IP.
-* **🛠 Công cụ sử dụng**:
-  * Python 3.10+, thư viện `scapy` (hoặc `pyshark`/`dpkt`), `pandas`, `numpy`.
-  * Wireshark (kiểm tra cấu trúc gói tin PCAP).
-  * Tập dữ liệu chuẩn CTU-13 (kịch bản mẫu ~50MB - 100MB, ví dụ Scenario 8 hoặc 10).
+* **Vai trò**: Trích xuất các đặc trưng thống kê từ file lưu lượng mạng thô (PCAP) và gán nhãn theo kịch bản CTU-13.
+* **🛠 Công cụ sử dụng**: Python 3.10+, `scapy` / `pyshark`, `pandas`, `numpy`, Wireshark, dataset CTU-13.
+* **📥 Điều kiện đầu vào**: Dev 1 hoàn thành Git repo; tải được file PCAP mẫu (~50-100MB) và danh sách IP Botnet.
 
-* **📥 Điều kiện đầu vào**:
-  * Dev 1 hoàn thành cấu trúc thư mục trên GitHub.
-  * Tải về file `.pcap` và tài liệu mô tả địa chỉ IP Botnet tương ứng từ CTU-13.
+* **💻 To-do List (Tiến độ 14 ngày):**
+  - [ ] **Ngày 1 - 2**: Tải file PCAP mẫu và lưu vào `data/raw/`.
+  - [ ] **Ngày 3 - 4**: Xây dựng module `src/data/flow_extractor.py`:
+    - Gom nhóm gói tin thành Flow theo 5-tuple: `(src_ip, dst_ip, src_port, dst_port, protocol)`.
+    - Tính toán các chỉ số: thời lượng luồng, số gói tin, tổng số byte, tốc độ truyền, độ dài gói tin trung bình.
+  - [ ] **Ngày 4 - 5**: Xây dựng module `src/data/labeling.py`:
+    - So khớp IP với danh sách Botnet IP từ CTU-13: Nếu trùng $\rightarrow$ `label = 1`, ngược lại $\rightarrow$ `label = 0`.
+  - [ ] **Ngày 5**: Xuất file `data/processed/ctu13_labeled_flows.csv` **bàn giao ngay cho Dev 3**.
+  - [ ] **Ngày 6 - 8**: Soạn thảo nội dung Chương 2 Báo cáo (Tổng quan dữ liệu CTU-13 và phương pháp trích xuất đặc trưng luồng mạng) nộp cho Dev 1.
 
-* **💻 To-do List (Quy trình thực hiện):**
-  - [ ] **Tuần 1**: Tải dữ liệu PCAP và lưu vào thư mục `data/raw/`.
-  - [ ] **Tuần 2**: Xây dựng module `src/data/flow_extractor.py`:
-    - Đọc luồng gói tin theo khối dữ liệu (batch/stream) để tối ưu hóa bộ nhớ RAM.
-    - Gom nhóm các gói tin thành các Flow theo 5-tuple: `(src_ip, dst_ip, src_port, dst_port, protocol)`.
-    - Tính toán các đặc trưng thống kê: `flow_duration`, `total_fwd_pkts`, `total_bwd_pkts`, `total_fwd_bytes`, `total_bwd_bytes`, `bytes_per_sec`, `packets_per_sec`, `packet_len_mean`, `packet_len_std`.
-  - [ ] **Tuần 2**: Xây dựng module `src/data/labeling.py`:
-    - Đọc danh sách IP Botnet từ tài liệu kịch bản CTU-13.
-    - So khớp: Nếu `src_ip` hoặc `dst_ip` nằm trong danh sách nhiễm $\rightarrow$ `label = 1` (Botnet), ngược lại $\rightarrow$ `label = 0` (Normal).
-  - [ ] **Tuần 2**: Xuất tập dữ liệu đã gán nhãn ra file `data/processed/ctu13_labeled_flows.csv`.
-  - [ ] **Tuần 4**: Soạn thảo nội dung Chương 2 Báo cáo (Cơ sở lý thuyết về tập dữ liệu CTU-13 và phương pháp trích xuất đặc trưng luồng mạng) gửi Dev 1.
-
-* **🎯 Sản phẩm bàn giao & Tiêu chí nghiệm thu:**
-  - [ ] Mã nguồn `flow_extractor.py` và `labeling.py` hoàn thiện, có chú thích rõ ràng.
-  - [ ] File dữ liệu `data/processed/ctu13_labeled_flows.csv` đầy đủ (khoảng 20.000 - 100.000 bản ghi), phân bố đủ 2 lớp nhãn, không chứa dữ liệu rỗng.
-  - [ ] Bản thảo nội dung Chương 2 nộp cho Leader.
+* **🎯 Sản phẩm bàn giao:**
+  - [ ] Module `flow_extractor.py` và `labeling.py`.
+  - [ ] File dữ liệu `ctu13_labeled_flows.csv` (đầy đủ 2 nhãn, từ 20.000 - 100.000 dòng).
+  - [ ] Bản thảo Chương 2 gửi Leader.
 
 ---
 
 ### 👤 DEV 3: Chuyên Viên Tiền Xử Lý & Chống Rò Rỉ Dữ Liệu (EDA, Preprocessing & Anti-Leakage)
-* **Vai trò**: Phân tích khám phá dữ liệu (EDA), xử lý dữ liệu khuyết thiếu/bất thường, loại bỏ triệt để các đặc trưng gây rò rỉ thông tin (Anti-Leakage), chuẩn hóa thang đo và phân chia tập huấn luyện/kiểm thử.
-* **🛠 Công cụ sử dụng**:
-  * Jupyter Notebook, Python 3.10+, `pandas`, `numpy`, `matplotlib`, `seaborn`.
-  * `scikit-learn` (`RobustScaler`, `train_test_split`), `joblib` / `pickle`.
+* **Vai trò**: Khảo sát dữ liệu, xử lý ngoại lai/khuyết thiếu, xóa bỏ rò rỉ dữ liệu (Anti-Leakage), chuẩn hóa thang đo và chia tập Train/Test.
+* **🛠 Công cụ sử dụng**: Jupyter Notebook, `pandas`, `numpy`, `matplotlib`, `seaborn`, `scikit-learn` (`RobustScaler`, `train_test_split`), `joblib` / `pickle`.
+* **📥 Điều kiện đầu vào**: Nhận file `ctu13_labeled_flows.csv` từ Dev 2 vào Ngày 5.
 
-* **📥 Điều kiện đầu vào**:
-  * Tiếp nhận file `ctu13_labeled_flows.csv` từ Dev 2.
+* **💻 To-do List (Tiến độ 14 ngày):**
+  - [ ] **Ngày 3 - 4**: Tạo sẵn khung Jupyter Notebook `notebooks/01_eda.ipynb` (chuẩn bị sẵn các hàm vẽ phân bố nhãn, thống kê missing value).
+  - [ ] **Ngày 5 - 6**: Nhận data từ Dev 2, chạy EDA khảo sát tỷ lệ mất cân bằng dữ liệu và các giá trị lỗi.
+  - [ ] **Ngày 6 - 7**: Xây dựng module `src/features/preprocessor.py`:
+    - Xử lý giá trị vô cùng (`Inf` $\rightarrow$ `NaN`), điền khuyết thiếu bằng trung vị (Median).
+    - **CHỐNG RÒ RỈ DỮ LIỆU**: Xóa bỏ hoàn toàn các cột định danh (`src_ip`, `dst_ip`, `src_port`, `dst_port`, `timestamp`).
+    - Phân chia tập Train/Test: 70% Train - 30% Test (`stratify=y`, `random_state=42`).
+    - Dùng `RobustScaler` fit trên tập Train, transform cho cả Train và Test.
+    - Lưu bộ chuẩn hóa vào `models/scaler.joblib`.
+  - [ ] **Ngày 8**: Xuất `train_data.csv`, `test_data.csv` **bàn giao ngay cho Dev 4**.
+  - [ ] **Ngày 9 - 11**: Soạn thảo nội dung Chương 3 Báo cáo (Kỹ thuật tiền xử lý, cơ sở dùng RobustScaler và phân tích chống Data Leakage) nộp cho Dev 1.
 
-* **💻 To-do List (Quy trình thực hiện):**
-  - [ ] **Tuần 2 - 3**: Xây dựng Jupyter Notebook `notebooks/01_eda.ipynb`:
-    - Khảo sát trực quan phân bố nhãn (đánh giá mức độ mất cân bằng lớp giữa Botnet và Normal).
-    - Thống kê các giá trị dị biệt: các dòng chứa `NaN` hoặc `Inf` (vô cùng).
-  - [ ] **Tuần 3**: Xây dựng module `src/features/preprocessor.py`:
-    - Xử lý các giá trị vô cùng `Inf` thành `NaN` và điền khuyết thiếu bằng giá trị trung vị (Median).
-    - **CHỐNG RÒ RỈ DỮ LIỆU (Yêu cầu bắt buộc)**: Loại bỏ hoàn toàn các trường định danh: `src_ip`, `dst_ip`, `src_port`, `dst_port`, `timestamp` để tránh việc mô hình học vẹt địa chỉ thay vì học hành vi luồng mạng.
-    - Tách ma trận đặc trưng $X$ và vector nhãn $y$.
-    - Phân chia tập dữ liệu: 70% Huấn luyện (Train) - 30% Kiểm thử (Test) với thiết lập phân tầng (`stratify=y`, `random_state=42`).
-    - Ứng dụng `RobustScaler` để chuẩn hóa (tăng cường khả năng thích ứng với các giá trị ngoại lai).
-    - Lưu trữ bộ biến đổi vào `models/scaler.joblib`.
-  - [ ] **Tuần 3**: Lưu 2 tập dữ liệu chuẩn: `data/processed/train_data.csv` và `data/processed/test_data.csv`.
-  - [ ] **Tuần 4**: Soạn thảo nội dung Chương 3 Báo cáo (Quy trình tiền xử lý, cơ sở lựa chọn RobustScaler và giải trình cơ chế phòng chống Data Leakage) gửi Dev 1.
-
-* **🎯 Sản phẩm bàn giao & Tiêu chí nghiệm thu:**
-  - [ ] Notebook `01_eda.ipynb` hoàn chỉnh biểu đồ và nhận xét phân tích.
-  - [ ] Module `preprocessor.py` thực thi độc lập thành công.
-  - [ ] 2 file `train_data.csv` và `test_data.csv` sạch hoàn toàn (không còn giá trị khuyết thiếu hay các cột IP/Port).
-  - [ ] File bộ chuẩn hóa `models/scaler.joblib`.
-  - [ ] Bản thảo nội dung Chương 3 nộp cho Leader.
+* **🎯 Sản phẩm bàn giao:**
+  - [ ] Notebook `01_eda.ipynb` hoàn thiện trực quan.
+  - [ ] Module `preprocessor.py` chạy độc lập.
+  - [ ] 2 file dữ liệu sạch: `train_data.csv`, `test_data.csv` và file `scaler.joblib`.
+  - [ ] Bản thảo Chương 3 gửi Leader.
 
 ---
 
 ### 👤 DEV 4: Kỹ Sư Machine Learning (Core ML Models & Evaluation)
-* **Vai trò**: Triển khai huấn luyện các thuật toán học máy, tối ưu tham số cơ bản, đánh giá hiệu năng theo các chỉ số chuyên biệt trong An toàn thông tin và lưu trữ mô hình tối ưu nhất.
-* **🛠 Công cụ sử dụng**:
-  * Python 3.10+, `scikit-learn`, `pickle` / `joblib`, `pandas`.
-  * Mô hình: `LogisticRegression`, `DecisionTreeClassifier`, `RandomForestClassifier`, `MLPClassifier`.
-  * Chỉ số đánh giá: `accuracy_score`, `precision_score`, `recall_score`, `f1_score`, `confusion_matrix`.
+* **Vai trò**: Huấn luyện các mô hình ML, đo lường các chỉ số an ninh mạng (Accuracy, Precision, Recall, F1, FPR) và đóng gói mô hình xuất sắc nhất.
+* **🛠 Công cụ sử dụng**: Python 3.10+, `scikit-learn`, `pickle` / `joblib`, `pandas`.
+* **📥 Điều kiện đầu vào**: Nhận `train_data.csv` và `test_data.csv` từ Dev 3 vào Ngày 8.
 
-* **📥 Điều kiện đầu vào**:
-  * Tiếp nhận `train_data.csv` và `test_data.csv` từ Dev 3.
+* **💻 To-do List (Tiến độ 14 ngày):**
+  - [ ] **Ngày 1 - 4**: Dựng sẵn toàn bộ khung code huấn luyện `src/models/train.py` (với dữ liệu giả lập), kiểm tra chạy mượt mà không lỗi cú pháp.
+  - [ ] **Ngày 5 - 7**: Viết trước phần lý thuyết Chương 4 Báo cáo (Lý thuyết về Logistic Regression, Decision Tree, Random Forest, MLP và ý nghĩa chỉ số FPR trong An toàn thông tin).
+  - [ ] **Ngày 8 - 9**: Nhận dữ liệu sạch từ Dev 3, chạy `python src/models/train.py` trên dữ liệu thật:
+    - Huấn luyện 4 mô hình: Logistic Regression, Decision Tree, Random Forest, MLP.
+    - Đo đạc chi tiết: Accuracy, Precision, Recall, F1-Score, FPR.
+    - Xuất bảng kết quả thực nghiệm ra `results/benchmark_results.csv`.
+    - Lưu mô hình tốt nhất ra `models/best_model.joblib`.
+  - [ ] **Ngày 10**: **Bàn giao `best_model.joblib` và `benchmark_results.csv` cho Dev 1 và Dev 5**.
+  - [ ] **Ngày 10 - 12**: Cập nhật số liệu thực tế vào Chương 4 Báo cáo và nộp cho Dev 1.
 
-* **💻 To-do List (Quy trình thực hiện):**
-  - [ ] **Tuần 3**: Xây dựng script huấn luyện `src/models/train.py`:
-    - Nạp dữ liệu huấn luyện và kiểm thử.
-    - Cấu hình và huấn luyện các mô hình phân loại:
-      1. `LogisticRegression` (Mô hình cơ sở - Baseline)
-      2. `DecisionTreeClassifier`
-      3. `RandomForestClassifier`
-      4. `MLPClassifier` (Mạng nơ-ron đa tầng)
-  - [ ] **Tuần 3**: Đo lường và đánh giá hiệu năng mô hình trên tập Test:
-    - Tính toán: `Accuracy`, `Precision`, `Recall`, `F1-Score`.
-    - **Tính toán tỷ lệ báo động giả (False Positive Rate - FPR)**: $\text{FPR} = \frac{\text{FP}}{\text{FP} + \text{TN}}$ (Chỉ số kiểm soát báo động giả phục vụ vận hành SOC).
-  - [ ] **Tuần 3**: Xuất bảng tổng hợp kết quả so sánh vào `results/benchmark_results.csv`.
-  - [ ] **Tuần 3**: Lựa chọn mô hình có sự cân bằng F1-Score và FPR tối ưu nhất, đóng gói thành `models/best_model.joblib`.
-  - [ ] **Tuần 4**: Soạn thảo nội dung Chương 4 Báo cáo (So sánh lý thuyết thuật toán và phân tích kết quả thực nghiệm) gửi Dev 1.
-
-* **🎯 Sản phẩm bàn giao & Tiêu chí nghiệm thu:**
-  - [ ] Script `src/models/train.py` thực thi ổn định bằng lệnh `python src/models/train.py`.
+* **🎯 Sản phẩm bàn giao:**
+  - [ ] Script `src/models/train.py` chạy ổn định.
   - [ ] File mô hình đóng gói `models/best_model.joblib`.
-  - [ ] Bảng dữ liệu đánh giá `results/benchmark_results.csv` đầy đủ các trường đo lường.
-  - [ ] Bản thảo nội dung Chương 4 nộp cho Leader.
+  - [ ] File bảng kết quả so sánh `results/benchmark_results.csv`.
+  - [ ] Bản thảo Chương 4 gửi Leader.
 
 ---
 
 ### 👤 DEV 5: Kỹ Sư Trực Quan Hóa & Giao Diện Người Dùng (Visualization & Streamlit UI)
-* **Vai trò**: Thiết kế các biểu đồ đánh giá chuyên sâu (Ma trận nhầm lẫn, Tầm quan trọng của đặc trưng), lập trình ứng dụng Web Demo (Streamlit) cho phép tải file PCAP và phát hiện xâm nhập trực quan.
-* **🛠 Công cụ sử dụng**:
-  * Python 3.10+, thư viện `streamlit`.
-  * `matplotlib`, `seaborn` (trực quan hóa dữ liệu).
+* **Vai trò**: Trực quan hóa các biểu đồ đánh giá (Confusion Matrix, Feature Importance) và xây dựng Web Demo Streamlit phục vụ buổi bảo vệ trực tiếp.
+* **🛠 Công cụ sử dụng**: Python 3.10+, `streamlit`, `matplotlib`, `seaborn`.
+* **📥 Điều kiện đầu vào**: Nhận `best_model.joblib` và bảng điểm từ Dev 4 vào Ngày 10.
 
-* **📥 Điều kiện đầu vào**:
-  * Tiếp nhận `best_model.joblib` và bảng điểm `benchmark_results.csv` từ Dev 4.
-  * Tiếp nhận hàm trích xuất/chuẩn hóa từ Dev 2 và Dev 3 để tích hợp vào giao diện quét file.
+* **💻 To-do List (Tiến độ 14 ngày):**
+  - [ ] **Ngày 4 - 7**: Dựng sẵn giao diện khung Web Streamlit `app.py` (Sidebar giới thiệu, bố cục Tab 1 Dashboard, Tab 2 Live Scanner).
+  - [ ] **Ngày 10 - 11**: Nhận `best_model.joblib` và kết quả từ Dev 4:
+    - Vẽ biểu đồ ma trận nhầm lẫn $\rightarrow$ Lưu `results/confusion_matrix.png`.
+    - Trích xuất `feature_importances_` từ Random Forest $\rightarrow$ Lưu `results/feature_importance.png`.
+  - [ ] **Ngày 11 - 12**: Hoàn thiện tính năng Live Scanner trên Web:
+    - Cho phép tải file PCAP $\rightarrow$ gọi hàm trích xuất/chuẩn hóa $\rightarrow$ dùng model dự đoán.
+    - Hiển thị tỷ lệ lây nhiễm (%) và bảng IP cảnh báo.
+  - [ ] **Ngày 12 - 13**: Chuẩn bị kịch bản demo 3 phút (chuẩn bị sẵn 1 file PCAP sạch và 1 file PCAP dính Botnet để bấm trực tiếp trước giảng viên).
+  - [ ] **Ngày 13 - 14**: Chụp ảnh giao diện Web Demo, viết Chương 5 Báo cáo nộp cho Dev 1.
 
-* **💻 To-do List (Quy trình thực hiện):**
-  - [ ] **Tuần 3 - 4**: Lập trình script trực quan hóa số liệu:
-    - Vẽ ma trận nhầm lẫn (Confusion Matrix) dạng biểu đồ nhiệt (Heatmap) $\rightarrow$ Lưu vào `results/confusion_matrix.png`.
-    - Khảo sát thuộc tính `feature_importances_` từ Random Forest, trực quan Top 10 đặc trưng quan trọng nhất $\rightarrow$ Lưu vào `results/feature_importance.png`.
-  - [ ] **Tuần 4**: Xây dựng ứng dụng Web `app.py` bằng nền tảng **Streamlit**:
-    - **Tab 1 - Dashboard Đánh Giá**: Hiển thị bảng so sánh các chỉ số thực nghiệm của Dev 4 kèm các biểu đồ trực quan.
-    - **Tab 2 - Trình Quét Lưu Lượng (Live Scanner)**:
-      - Cung cấp giao diện tải file PCAP (hoặc lựa chọn mẫu thử nghiệm có sẵn).
-      - Nút điều khiển `[🚀 Phân tích lưu lượng]`.
-      - Hiển thị các chỉ số tổng quan: Tổng số luồng mạng, Số luồng Botnet phát hiện, Tỷ lệ lây nhiễm (%).
-      - Bảng cảnh báo chi tiết các địa chỉ IP bị nghi vấn Botnet nhằm phục vụ ứng cứu sự cố.
-  - [ ] **Tuần 4 - 5**: Chuẩn bị kịch bản thuyết minh Demo: Chuẩn bị sẵn 1 mẫu PCAP sạch và 1 mẫu PCAP chứa tấn công để trình diễn thực tế trong 3 phút.
-  - [ ] **Tuần 5**: Chụp ảnh giao diện hoàn chỉnh, soạn thảo nội dung Chương 5 Báo cáo (Hướng dẫn vận hành hệ thống và minh họa kết quả) gửi Dev 1.
-
-* **🎯 Sản phẩm bàn giao & Tiêu chí nghiệm thu:**
-  - [ ] Ứng dụng Web `app.py` khởi động mượt mà bằng lệnh `streamlit run app.py`.
-  - [ ] Bộ ảnh biểu đồ trực quan chất lượng cao: `confusion_matrix.png` và `feature_importance.png`.
-  - [ ] Kịch bản trình diễn Demo thực tế trước hội đồng đánh giá.
-  - [ ] Bản thảo nội dung Chương 5 nộp cho Leader.
+* **🎯 Sản phẩm bàn giao:**
+  - [ ] Ứng dụng Web `app.py` khởi chạy mượt mà bằng lệnh `streamlit run app.py`.
+  - [ ] 2 file ảnh biểu đồ: `confusion_matrix.png` và `feature_importance.png`.
+  - [ ] Kịch bản bấm demo trực tiếp trơn tru.
+  - [ ] Bản thảo Chương 5 gửi Leader.
 
 ---
 
-## 🔄 4. Ma Trận Bàn Giao Sản Phẩm (Handoff Matrix)
+## 🔄 4. Ma Trận Bàn Giao Sản Phẩm Theo Ngày (Handoff Timeline)
 
-| Người chuyển giao | Sản phẩm bàn giao (File cụ thể) | Người tiếp nhận | Mục đích sử dụng |
-| :--- | :--- | :--- | :--- |
-| **Dev 1** | Repo Git, Cấu trúc dự án, `requirements.txt` | Toàn đội ngũ | Khởi tạo môi trường và đồng bộ mã nguồn |
-| **Dev 2** | `data/processed/ctu13_labeled_flows.csv` | **Dev 3** | Làm sạch, xử lý bất thường và loại bỏ rò rỉ dữ liệu |
-| **Dev 3** | `train_data.csv`, `test_data.csv` | **Dev 4** | Cung cấp dữ liệu huấn luyện và kiểm thử mô hình |
-| **Dev 3** | `models/scaler.joblib` | **Dev 1, Dev 5** | Chuẩn hóa các mẫu dữ liệu mới trong quá trình suy diễn |
-| **Dev 4** | `models/best_model.joblib` | **Dev 1, Dev 5** | Nạp mô hình phục vụ dự đoán phân loại trên CLI và Web |
-| **Dev 4** | `results/benchmark_results.csv` | **Dev 5** | Trình diễn số liệu so sánh trên giao diện Web |
-| **Dev 5** | Biểu đồ đồ họa (`.png`) & Ảnh chụp giao diện | **Dev 1** | Tích hợp vào Báo cáo tổng kết và Slide thuyết trình |
-| **Dev 2, 3, 4, 5** | Bản thảo nội dung chương tương ứng (Word) | **Dev 1** | Biên tập và tổng hợp thành cuốn Báo cáo hoàn chỉnh |
+| Mốc thời gian | Người gửi | Sản phẩm bàn giao (File cụ thể) | Người nhận | Mục đích sử dụng |
+| :--- | :--- | :--- | :--- | :--- |
+| **Ngày 1** | **Dev 1** | Repo Git, Cấu trúc dự án, `requirements.txt` | Toàn đội ngũ | Bắt đầu code đồng bộ |
+| **Ngày 5** | **Dev 2** | `data/processed/ctu13_labeled_flows.csv` | **Dev 3** | Bắt đầu làm sạch và loại bỏ rò rỉ dữ liệu |
+| **Ngày 8** | **Dev 3** | `train_data.csv`, `test_data.csv` | **Dev 4** | Nạp vào huấn luyện 4 mô hình ML |
+| **Ngày 8** | **Dev 3** | `models/scaler.joblib` | **Dev 1, Dev 5** | Dùng chuẩn hóa dữ liệu khi quét file PCAP mới |
+| **Ngày 10** | **Dev 4** | `models/best_model.joblib` | **Dev 1, Dev 5** | Nạp mô hình vào CLI và Web Demo |
+| **Ngày 10** | **Dev 4** | `results/benchmark_results.csv` | **Dev 5** | Đưa số liệu lên Dashboard Web Streamlit |
+| **Ngày 12** | **Dev 5** | Biểu đồ (`.png`) & Ảnh chụp Web Demo | **Dev 1** | Chèn vào Báo cáo Word và Slide |
+| **Ngày 12 - 13** | **Dev 2, 3, 4, 5** | Bản thảo Chương 2, 3, 4, 5 (Word) | **Dev 1** | Tổng hợp thành cuốn Báo cáo hoàn chỉnh |
+| **Ngày 14** | **Dev 1** | Báo cáo hoàn chỉnh (`.docx`) & Slide (`.pptx`) | Cả nhóm | Nộp bài và sẵn sàng bảo vệ đồ án |
 
 ---
 
-## 💡 5. 3 Quy Tắc Vàng Đảm Bảo Tiến Độ Dự Án
+## 💡 5. 3 Quy Tắc Vàng Đảm Bảo Tiến Độ 14 Ngày
 
-1. **Quy tắc phân nhánh Git (Git Branching)**:
-   * Không thực hiện commit trực tiếp lên nhánh chính `main`.
-   * Mỗi thành viên phát triển trên nhánh chức năng riêng biệt:
+1. **Làm việc song song (Không chờ đợi nhau)**:
+   * Dev 4 dựng sẵn khung `train.py` với dummy data ngay từ Tuần 1, viết trước lý thuyết Chương 4.
+   * Dev 5 dựng sẵn giao diện Web Streamlit từ Tuần 1.
+   * Khi dữ liệu đến tay là chạy ngay trong 1 buổi, không bị dồn việc.
+
+2. **Quy tắc phân nhánh Git (Git Branching)**:
+   * Không commit trực tiếp lên `main`. Mỗi người tạo nhánh riêng:
      * Dev 2: `feature/pcap-extraction`
      * Dev 3: `feature/data-preprocessing`
      * Dev 4: `feature/ml-training`
      * Dev 5: `feature/streamlit-ui`
-   * Kiểm thử hoàn chỉnh trên môi trường cá nhân trước khi tạo Pull Request để Dev 1 duyệt gộp vào `main`.
+   * Test kỹ trên máy cá nhân rồi mới tạo Pull Request để Dev 1 gộp vào `main`.
 
-2. **Quy tắc quản lý dữ liệu lớn**:
-   * Tuyệt đối không đưa các tệp dữ liệu dung lượng lớn (`.pcap`, `.csv`) lên Git repository.
-   * Cấu hình file `.gitignore` để tự động loại trừ. Chia sẻ dữ liệu thô thông qua kho lưu trữ đám mây dùng chung.
-
-3. **Quy tắc đồng bộ môi trường phát triển**:
-   * Tất cả thành viên sử dụng phiên bản Python 3.10+ đồng nhất.
-   * Cài đặt phụ thuộc thông qua lệnh chuẩn:
-   ```bash
-   pip install -r requirements.txt
-   ```
-   * Danh mục thư viện quy chuẩn:
-     ```text
-     pandas>=2.0.0
-     numpy>=1.24.0
-     scapy>=2.5.0
-     scikit-learn>=1.3.0
-     matplotlib>=3.7.0
-     seaborn>=0.12.0
-     streamlit>=1.28.0
-     joblib>=1.3.0
-     ```
+3. **Quy tắc quản lý file nặng**:
+   * Không đẩy file `.pcap` hoặc `.csv` hàng trăm MB lên GitHub.
+   * Đã có `.gitignore` chặn tự động. Dữ liệu chia sẻ qua Google Drive nhóm.

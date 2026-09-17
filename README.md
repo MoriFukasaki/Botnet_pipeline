@@ -3,7 +3,7 @@
 
 **Đề tài**: Xây dựng Pipeline trích xuất đặc trưng và phát hiện Botnet từ lưu lượng mạng PCAP  
 **Môn học**: Ứng dụng Học máy trong An toàn thông tin (Machine Learning for Cybersecurity)  
-**Thời gian thực hiện**: 5 tuần  
+**Thời gian thực hiện**: 2 tuần (Kế hoạch chạy nước rút - 14 ngày)  
 
 ---
 
