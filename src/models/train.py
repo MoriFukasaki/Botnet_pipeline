@@ -60,8 +60,8 @@ def train_and_evaluate():
     print("BAT DAU HUAN LUYEN VA DANH GIA MO HINH")
     print("==========================================================\n")
 
-    train_path = "data/processed/train_data.csv"
-    test_path = "data/processed/test_data.csv"
+    train_path = "data/train_processed.csv"
+    test_path = "data/test_processed.csv"
 
     X_train, y_train, X_test, y_test = load_or_create_data(train_path, test_path)
     print(f"[*] Kich thuoc tap Train: {X_train.shape}, Tap Test: {X_test.shape}")
